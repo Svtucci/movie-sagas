@@ -22,7 +22,7 @@ function* getDescription() {
     try {
         const movies = yield axios.get('/api/movie');
         console.log('get description', movies.data);
-        yield put({ type: 'SET_DESCRIPTION', payload: movies.data[0].description });
+        yield put({ type: 'SET_DESCRIPTION', payload: movies.data.description });
     } catch{
         console.log('get description error'); 
     }
@@ -55,7 +55,7 @@ const movies = (state = [], action) => {
     }
 }
 
-const description = (state = '', action) => {
+const description = (state = [], action) => {
     switch (action.type) {
         case 'SET_DESCRIPTION':
             return action.payload;
