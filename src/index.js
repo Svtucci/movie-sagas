@@ -14,20 +14,29 @@ import axios from 'axios';
 // Create the rootSaga generator function
 function* rootSaga() {
     yield takeEvery('FETCH_MOVIES', fetchAllMovies);
-    yield takeEvery('FETCH_DESCRIPTION', getDescription); 
+    yield takeEvery('FETCH_MOVIE', fetchMovieById); 
+    // yield takeEvery('FETCH_DESCRIPTION', getDescription); 
 }
 
 // gets description from DB
-function* getDescription() {
+// function* getDescription(action) {
+//     try {
+//         const movieDetails = yield axios.get('/api/details/');
+//         console.log('get description', movieDetails.data);
+//         yield put({ type: 'SET_DESCRIPTION', payload: movieDetails.data.description });
+//     } catch{
+//         console.log('get description error'); 
+//     }
+// }
+
+function* fetchMovieById(action) {
     try {
-        const movies = yield axios.get('/api/movie');
-        console.log('get description', movies.data);
-        yield put({ type: 'SET_DESCRIPTION', payload: movies.data.description });
-    } catch{
-        console.log('get description error'); 
+        const movie = yield axios.get(`/api/movie/details/${action.payload}`);
+        yield put ({ type: 'SET_MOVIE', payload: movie.data}); 
+    } catch (err){
+        console.log('Error in fetch MOVIE', err); 
     }
 }
-
 
 function* fetchAllMovies() {
     // get all movies from the DB
@@ -55,9 +64,9 @@ const movies = (state = [], action) => {
     }
 }
 
-const description = (state = [], action) => {
+const movie = (state = [], action) => {
     switch (action.type) {
-        case 'SET_DESCRIPTION':
+        case 'SET_MOVIE':
             return action.payload;
         default:
             return state;
@@ -79,7 +88,7 @@ const storeInstance = createStore(
     combineReducers({
         movies,
         genres,
-        description,
+        movie,
     }),
     // Add sagaMiddleware to our store
     applyMiddleware(sagaMiddleware, logger),
